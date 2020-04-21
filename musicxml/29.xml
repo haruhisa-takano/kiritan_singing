@@ -3626,6 +3626,10 @@
         <notations>
           <tied type="stop"/>
         </notations>
+        <lyric default-y="-80" number="1" relative-x="7">
+          <syllabic>single</syllabic>
+          <text font-family="FreeSerif" font-size="10.7">ん</text>
+        </lyric>
       </note>
       <barline location="right">
         <bar-style>light-heavy</bar-style>
