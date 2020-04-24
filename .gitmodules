@@ -1,0 +1,3 @@
+[submodule "kiritan_singing_extra"]
+	path = kiritan_singing_extra
+	url = git@github.com:r9y9/kiritan_singing_extra.git
