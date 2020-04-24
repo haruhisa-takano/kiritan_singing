@@ -2,7 +2,7 @@
 
 (The original README in Japnese follows)
 
-Labels for kiritan_singing data with extra resources for DNN-based singing voice synthesis (SVS) systems. The repository includes scripts to generate [sinsy](https://github.com/r9y9/sinsy)-compatible full-context labels, as well as semi-automatically corrected labels, which can be used to build DNN-based parametric SVS systems. Important features are summarized below:
+Labels for kiritan_singing data with extra resources for DNN-based singing voice synthesis (SVS) systems. The repository includes scripts to generate [sinsy](https://github.com/r9y9/sinsy)-compatible full-context labels, which can be used to build DNN-based parametric SVS systems. Important features are summarized below:
 
 - Full-context or mono label generation from musicxml files by [pysinsy](https://github.com/r9y9/pysinsy).
 - DTW-based alignment between sinsy-generated labels and kiritan's alignment.
