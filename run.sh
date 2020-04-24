@@ -1,3 +1,5 @@
+git submodule update --recursive --init
+
 # Step 1:
 # Generate full-context lables from music xml using pysinsy
 # pysinsy: https://github.com/r9y9/pysinsy
