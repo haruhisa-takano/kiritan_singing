@@ -1,3 +1,77 @@
+# kiritan_singing
+
+(The original README in Japnese follows)
+
+Labels for kiritan_singing data with extra resources for DNN-based singing voice synthesis (SVS) systems. The repository includes scripts to generate [sinsy](https://github.com/r9y9/sinsy)-compatible full-context labels, as well as semi-automatically corrected labels, which can be used to build DNN-based parametric SVS systems. Important features are summarized below:
+
+- Full-context or mono label generation from musicxml files by [pysinsy](https://github.com/r9y9/pysinsy).
+- DTW-based alignment between sinsy-generated labels and kiritan's alignment.
+- Data preparation for training timelag/duration/acoustic models.
+- Offset correction for songs 01 to 05. Ref [mmorise/kiritan_singing/issues/6](https://github.com/mmorise/kiritan_singing/issues/6)
+- Audio file segmention based on simple heuristics.
+
+I confirmed that pysinsy generates the same full-context labels with those produced by [NEUTRINO](https://n3utrino.work/). To know what the timelag/duration/acoustic models are, please have a look at some of SVS papers. e.g.,
+
+- Y. Hono et al, "Recent Development of the DNN-based Singing Voice Synthesis System — Sinsy," Proc. of APSIPA, 2017.
+
+See [DNN-SVS](https://github.com/r9y9/dnnsvs) to see how one can build SVS systems using the data provided in the repository.
+
+
+## Requirements
+
+- sinsy: https://github.com/r9y9/sinsy
+- pysinsy: https://github.com/r9y9/pysinsy
+- nnmnkwii (master): https://github.com/r9y9/nnmnkwii
+- See also requirements.txt
+
+## How to use
+
+Due to the licensing issue, the repository does not include audio files. To generate data which is required for trainig SVS models using [DNN-SVS](https://github.com/r9y9/dnnsvs), please change `wav_dir` in `common.py` based on your environment. Then, please run:
+
+```
+run.sh
+```
+
+See comments in the `run.sh` for details. After running the script, you can findt the following there directories:
+
+- `kiritan_singing_extra/timelag`
+- `kiritan_singing_extra/duration`
+- `kiritan_singing_extra/acoustic`
+
+where labels and wav files used for building timelag/duration/acoustic models are stored. The directory structure is as follows:
+
+### kiritan_singing_extra/timelag
+
+```
+tree kiritan_singing_extra/timelag/ -L 1
+kiritan_singing_extra/timelag/
+├── label_phone_align
+└── label_phone_score
+```
+
+### kiritan_singing_extra/duration
+
+```
+tree kiritan_singing_extra/duration/ -L 1
+kiritan_singing_extra/duration/
+└── label_phone_align
+```
+
+### kiritan_singing_extra/acoustic
+
+```
+tree kiritan_singing_extra/acoustic -L 1
+kiritan_singing_extra/acoustic
+├── label_phone_align
+└── wav
+```
+
+## Acknowledgements
+
+I would like to thank Prof. Morise and authors of the kiritan_singing database for thier continuous improvements and kind support.
+
+Ryuichi Yamamoto
+
 # 東北きりたん歌唱データベースのラベルデータ
 東北きりたん歌唱データベース（きりたん歌唱DB）の最新ラベルデータを共有するためのリポジトリです．データベースの本体は[こちら](https://zunko.jp/kiridev/login.php)からダウンロードできます．midi_label，mono_labelに加えてMusicXMLも公開しました．
 
