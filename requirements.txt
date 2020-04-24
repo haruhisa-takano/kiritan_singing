@@ -1,0 +1,6 @@
+nnmnkwii
+librosa
+soundfile
+scipy
+numpy
+tqdm
