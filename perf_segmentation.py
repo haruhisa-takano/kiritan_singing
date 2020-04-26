@@ -34,7 +34,8 @@ for name in ["full_dtw", "sinsy_full_round", "sinsy_mono_round"]:
     for idx, base in enumerate(base_files):
         utt_id = splitext(basename(base))[0]
         base_lab = hts.load(base)
-        base_segments, start_indices, end_indices = segment_labels(base_lab)
+        base_segments, start_indices, end_indices = segment_labels(
+            base_lab, True, config.segmentation_threshold)
 
         lab = hts.load(files[idx])
         assert len(lab) == len(base_lab)

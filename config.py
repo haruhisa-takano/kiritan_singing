@@ -12,5 +12,8 @@ out_dir = "kiritan_singing_extra"
 # PLEASE CHANGE THE PATH BASED ON YOUR ENVIRONMENT
 wav_dir = join(expanduser("~"), "data/kiritan_singing/wav/")
 
+# Split song by silences (in sec)
+segmentation_threshold = 2.5
+
 # TODO(ryuichi): progress 31/50
 num_annotated_files = 31

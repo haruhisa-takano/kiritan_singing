@@ -18,7 +18,7 @@ def merge_sil(lab):
     return f
 
 
-def segment_labels(lab, strict=True):
+def segment_labels(lab, strict=True, threshold=1.0):
     segments = []
     seg = hts.HTSLabelFile()
     is_full_context = "@" in lab[0][-1]
@@ -31,7 +31,7 @@ def segment_labels(lab, strict=True):
             is_silence = ("-sil" in l or "-pau" in l)
         else:
             is_silence = (l == "sil" or l == "pau")
-        if is_silence and d > 2.5:
+        if is_silence and d > threshold:
             if len(seg) > 0:
                 start_indices.append(si)
                 si = 0
@@ -99,6 +99,7 @@ def trim_sil_and_pau(lab):
     forward = 0
     while "-sil" in lab.contexts[forward] or "-pau" in lab.contexts[forward]:
         forward += 1
+
     backward = len(lab)-1
     while "-sil" in lab.contexts[backward] or "-pau" in lab.contexts[backward]:
         backward -= 1
