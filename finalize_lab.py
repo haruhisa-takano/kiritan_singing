@@ -70,9 +70,6 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
         lab_score.start_times = list(np.asarray(lab_score.start_times) + offset)
         lab_score.end_times = list(np.asarray(lab_score.end_times) + offset)
 
-        lab_align = fix_offset(lab_align)
-        lab_score = fix_offset(lab_score)
-
         # Note onsets as labels
         lab_align = lab_align[note_indices]
         lab_score = lab_score[note_indices]
