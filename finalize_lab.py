@@ -123,8 +123,9 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
 dst_dir = join(config.out_dir, "acoustic")
 wav_dst_dir  = join(dst_dir, "wav")
 lab_align_dst_dir  = join(dst_dir, "label_phone_align")
+lab_score_dst_dir  = join(dst_dir, "label_phone_score")
 
-for d in [wav_dst_dir, lab_align_dst_dir]:
+for d in [wav_dst_dir, lab_align_dst_dir, lab_score_dst_dir]:
     os.makedirs(d, exist_ok=True)
 
 print("Prepare data for acoustic models")
@@ -137,11 +138,13 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
     seg_idx = 0
     while True:
         lab_align_path = join(full_align_dir, f"{n:02}_seg{seg_idx}.lab")
+        lab_score_path = join(full_score_dir, f"{n:02}_seg{seg_idx}.lab")
         name = basename(lab_align_path)
         assert seg_idx > 0 or exists(lab_align_path)
         if not exists(lab_align_path):
             break
         lab_align = hts.load(lab_align_path)
+        lab_score = hts.load(lab_score_path)
 
         # Make a slice of audio and then save it
         b, e = int(lab_align[0][0] * 1e-7 * sr), int(lab_align[-1][1] * 1e-7 * sr)
@@ -153,11 +156,16 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
         # Set the beginning time to be zero for convenience
         lab_align = fix_offset(lab_align)
         sanity_check_lab(lab_align)
+        lab_score = fix_offset(lab_score)
 
         # Save label
         lab_align_dst_path = join(lab_align_dst_dir, name)
         with open(lab_align_dst_path, "w") as of:
             of.write(str(lab_align))
+
+        lab_score_dst_path = join(lab_score_dst_dir, name)
+        with open(lab_score_dst_path, "w") as of:
+            of.write(str(lab_score))
 
         seg_idx += 1
 
