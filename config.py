@@ -12,8 +12,24 @@ out_dir = "kiritan_singing_extra"
 # PLEASE CHANGE THE PATH BASED ON YOUR ENVIRONMENT
 wav_dir = join(expanduser("~"), "data/kiritan_singing/wav/")
 
-# Split song by silences (in sec)
-segmentation_threshold = 2.5
+# Song segmentation by silence durations.
+# TODO: would be better to split songs by phrasal information in the musical scores
 
-# TODO(ryuichi): progress 31/50
-num_annotated_files = 31
+# Split song by silences (in sec)
+segmentation_threshold = 0.4
+
+# Min duration for a segment
+# note: there could be some execptions (e.g., the last segment of a song)
+segment_min_duration = 5.0
+
+# Force split segments if long silence is found regardless of min_duration
+force_split_threshold = 5.0
+
+
+# Offset correction
+# If True, offset is computed in an entire song
+# otherwise offset is computed for each segment
+global_offset_correction = False
+
+# TODO(ryuichi): progress 34/50
+num_annotated_files = 34

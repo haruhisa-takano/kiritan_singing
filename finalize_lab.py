@@ -22,6 +22,14 @@ def sanity_check_lab(lab):
         assert e-b > 0
 
 
+def remove_sil_and_pau(lab):
+    newlab = hts.HTSLabelFile()
+    for l in lab:
+        if "-sil" not in l[-1] and "-pau" not in l[-1]:
+            newlab.append(l, strict=False)
+
+    return newlab
+
 ### Prepare data for time-lag models
 
 dst_dir = join(config.out_dir, "timelag")
@@ -34,6 +42,31 @@ for d in [lab_align_dst_dir, lab_score_dst_dir]:
 print("Prepare data for time-lag models")
 for n in tqdm(range(1, config.num_annotated_files+1)):
     seg_idx = 0
+
+    # Compute offset for the entire song
+    lab_align_path = join(config.out_dir, "full_dtw", f"{n:02}.lab")
+    lab_score_path = join(config.out_dir, "sinsy_full_round", f"{n:02}.lab")
+    lab_align = trim_sil_and_pau(hts.load(lab_align_path))
+    lab_score = trim_sil_and_pau(hts.load(lab_score_path))
+
+    # this may harm for computing offset
+    lab_align = remove_sil_and_pau(lab_align)
+    lab_score = remove_sil_and_pau(lab_score)
+
+    # Extract note onsets and let's compute a offset
+    note_indices = get_note_indices(lab_score)
+
+    # offset = argmin_{b} \sum_{t=1}^{T}|x-(y+b)|^2
+    # assuming there's a constant offset; tempo is same through the song
+    onset_align = np.asarray(lab_align[note_indices].start_times)
+    onset_score = np.asarray(lab_score[note_indices].start_times)
+    global_offset = (onset_align - onset_score).mean()
+    global_offset = int(round(global_offset / 50000) * 50000)
+
+    # Apply offset correction only when there is a big gap
+    apply_offset_correction = np.abs(global_offset * 1e-7) > 0.1
+    if apply_offset_correction:
+        print(f"{n}: Global offset (in sec): {global_offset * 1e-7}")
 
     while True:
         lab_align_path = join(full_align_dir, f"{n:02}_seg{seg_idx}.lab")
@@ -59,16 +92,21 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
         # assuming there's a constant offset; tempo is same through the song
         onset_align = np.asarray(lab_align[note_indices].start_times)
         onset_score = np.asarray(lab_score[note_indices].start_times)
-        offset = (onset_align - onset_score).mean()
-        offset = int(round(offset / 50000) * 50000)
-        print(f"{name} Offset (in sec): {offset * 1e-7}")
-
-        if offset * 1e-7 > 1.0:
-            print("Large offset is detected! Bug or wrong score?")
+        segment_offset = (onset_align - onset_score).mean()
+        segment_offset = int(round(segment_offset / 50000) * 50000)
 
         # Offset adjustment
-        lab_score.start_times = list(np.asarray(lab_score.start_times) + offset)
-        lab_score.end_times = list(np.asarray(lab_score.end_times) + offset)
+        if apply_offset_correction:
+            if config.global_offset_correction:
+                offset_ = global_offset
+            else:
+                offset_ = segment_offset
+            print(f"{name} offset (in sec): {offset_ * 1e-7}")
+        else:
+            offset_ = 0
+
+        lab_score.start_times = list(np.asarray(lab_score.start_times) + offset_)
+        lab_score.end_times = list(np.asarray(lab_score.end_times) + offset_)
 
         # Note onsets as labels
         lab_align = lab_align[note_indices]
@@ -84,6 +122,7 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
             of.write(str(lab_score))
 
         seg_idx += 1
+
 
 ### Prepare data for duration models
 
