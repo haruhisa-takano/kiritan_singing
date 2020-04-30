@@ -14,7 +14,7 @@ I confirmed that pysinsy generates the same full-context labels with those produ
 
 - Y. Hono et al, "Recent Development of the DNN-based Singing Voice Synthesis System — Sinsy," Proc. of APSIPA, 2017.
 
-See [DNN-SVS](https://github.com/r9y9/dnnsvs) to see how one can build SVS systems using the data provided in the repository.
+See [dnnsvs/egs/kiritan_singing](https://github.com/r9y9/dnnsvs/tree/master/egs/kiritan_singing) to see how one can build SVS systems using the data provided in the repository.
 
 
 ## Requirements
