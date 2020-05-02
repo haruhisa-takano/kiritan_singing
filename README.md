@@ -14,7 +14,7 @@ I confirmed that pysinsy generates the same full-context labels with those produ
 
 - Y. Hono et al, "Recent Development of the DNN-based Singing Voice Synthesis System — Sinsy," Proc. of APSIPA, 2017.
 
-See [dnnsvs/egs/kiritan_singing](https://github.com/r9y9/dnnsvs/tree/master/egs/kiritan_singing) to see how one can build SVS systems using the data provided in the repository.
+See [nnsvs/egs/kiritan_singing](https://github.com/r9y9/nnsvs/tree/master/egs/kiritan_singing) to see how one can build SVS systems using the data provided in the repository.
 
 
 ## Requirements
@@ -26,7 +26,7 @@ See [dnnsvs/egs/kiritan_singing](https://github.com/r9y9/dnnsvs/tree/master/egs/
 
 ## How to use
 
-Due to the licensing issue, the repository does not include audio files. To generate data which is required for trainig SVS models using [DNN-SVS](https://github.com/r9y9/dnnsvs), please change `wav_dir` in `common.py` based on your environment. Then, please run:
+Due to the licensing issue, the repository does not include audio files. To generate data which is required for trainig SVS models using [DNN-SVS](https://github.com/r9y9/nnsvs), please change `wav_dir` in `common.py` based on your environment. Then, please run:
 
 ```
 run.sh
@@ -63,8 +63,11 @@ kiritan_singing_extra/duration/
 tree kiritan_singing_extra/acoustic -L 1
 kiritan_singing_extra/acoustic
 ├── label_phone_align
+├── label_phone_score
 └── wav
 ```
+
+`label_phone_score` in the acoustic directory is only used for evaluation.
 
 ## Acknowledgements
 
