@@ -31,5 +31,7 @@ force_split_threshold = 5.0
 # otherwise offset is computed for each segment
 global_offset_correction = False
 
+timelag_max = 50
+
 # TODO(ryuichi): progress 37/50
 num_annotated_files = 37
