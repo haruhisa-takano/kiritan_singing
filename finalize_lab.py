@@ -68,7 +68,7 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
     if apply_offset_correction:
         print(f"{n}: Global offset (in sec): {global_offset * 1e-7}")
 
-    timelag_max = config.timelag_max
+    max_timelag = config.max_timelag
 
     while True:
         lab_align_path = join(full_align_dir, f"{n:02}_seg{seg_idx}.lab")
@@ -96,9 +96,9 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
         onset_score = np.asarray(lab_score[note_indices].start_times)
         # Exclude large diff parts (probably a bug of musicxml though)
         diff = np.abs(onset_align - onset_score) / 50000
-        if diff.max() > timelag_max:
-            print(f"{n}.lab: {np.sum(diff > timelag_max)}/{len(diff)} of time-lags are excluded. max/max: {diff.min()}/{diff.max()}")
-            note_indices = list(np.asarray(note_indices)[diff <= timelag_max])
+        if diff.max() > max_timelag:
+            print(f"{n}.lab: {np.sum(diff > max_timelag)}/{len(diff)} of time-lags are excluded. max/max: {diff.min()}/{diff.max()}")
+            note_indices = list(np.asarray(note_indices)[diff <= max_timelag])
             # compute valid onsets
             onset_align = np.asarray(lab_align[note_indices].start_times)
             onset_score = np.asarray(lab_score[note_indices].start_times)
