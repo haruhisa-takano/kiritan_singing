@@ -11,7 +11,7 @@ import sys
 from tqdm import tqdm
 import numpy as np
 import config
-from util import fix_offset, trim_sil_and_pau, get_note_indices
+from util import fix_offset, trim_sil_and_pau, get_note_indices, _is_silence
 
 full_align_dir = join(config.out_dir, "full_dtw_seg")
 full_score_dir = join(config.out_dir, "sinsy_full_round_seg")
@@ -64,11 +64,9 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
     global_offset = int(round(global_offset / 50000) * 50000)
 
     # Apply offset correction only when there is a big gap
-    apply_offset_correction = np.abs(global_offset * 1e-7) > 0.1
+    apply_offset_correction = np.abs(global_offset * 1e-7) > config.offset_correction_threshold
     if apply_offset_correction:
         print(f"{n}: Global offset (in sec): {global_offset * 1e-7}")
-
-    max_timelag = config.max_timelag
 
     while True:
         lab_align_path = join(full_align_dir, f"{n:02}_seg{seg_idx}.lab")
@@ -94,19 +92,10 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
         # assuming there's a constant offset; tempo is same through the song
         onset_align = np.asarray(lab_align[note_indices].start_times)
         onset_score = np.asarray(lab_score[note_indices].start_times)
-        # Exclude large diff parts (probably a bug of musicxml though)
-        diff = np.abs(onset_align - onset_score) / 50000
-        if diff.max() > max_timelag:
-            print(f"{n}.lab: {np.sum(diff > max_timelag)}/{len(diff)} of time-lags are excluded. max/max: {diff.min()}/{diff.max()}")
-            note_indices = list(np.asarray(note_indices)[diff <= max_timelag])
-            # compute valid onsets
-            onset_align = np.asarray(lab_align[note_indices].start_times)
-            onset_score = np.asarray(lab_score[note_indices].start_times)
-
-        segment_offset = (onset_align - onset_score).mean()
-        segment_offset = int(round(segment_offset / 50000) * 50000)
 
         # Offset adjustment
+        segment_offset = (onset_align - onset_score).mean()
+        segment_offset = int(round(segment_offset / 50000) * 50000)
         if apply_offset_correction:
             if config.global_offset_correction:
                 offset_ = global_offset
@@ -115,14 +104,30 @@ for n in tqdm(range(1, config.num_annotated_files+1)):
             print(f"{name} offset (in sec): {offset_ * 1e-7}")
         else:
             offset_ = 0
-
+        # apply
         lab_score.start_times = list(np.asarray(lab_score.start_times) + offset_)
         lab_score.end_times = list(np.asarray(lab_score.end_times) + offset_)
+        onset_score += offset_
 
+        # Exclude large diff parts (probably a bug of musicxml or alignment though)
+        valid_note_indices = []
+        for idx, (a, b) in enumerate(zip(onset_align, onset_score)):
+            note_idx = note_indices[idx]
+            lag = np.abs(a - b) / 50000
+            if _is_silence(lab_score.contexts[note_idx]):
+                if lag >= config.timelag_allowed_range_rest[0] and lag <= config.timelag_allowed_range_rest[1]:
+                    valid_note_indices.append(note_idx)
+            else:
+                if lag >= config.timelag_allowed_range[0] and lag <= config.timelag_allowed_range[1]:
+                    valid_note_indices.append(note_idx)
+
+        if len(valid_note_indices) < len(note_indices):
+            D = len(note_indices) - len(valid_note_indices)
+            print(f"{n}.lab: {D}/{len(note_indices)} time-lags are excluded.")
 
         # Note onsets as labels
-        lab_align = lab_align[note_indices]
-        lab_score = lab_score[note_indices]
+        lab_align = lab_align[valid_note_indices]
+        lab_score = lab_score[valid_note_indices]
 
         # Save lab files
         lab_align_dst_path = join(lab_align_dst_dir, name)

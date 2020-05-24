@@ -30,8 +30,11 @@ force_split_threshold = 5.0
 # If True, offset is computed in an entire song
 # otherwise offset is computed for each segment
 global_offset_correction = False
+offset_correction_threshold = 0.01
 
-max_timelag = 50
+# Time-lag constraints to filter outliers
+timelag_allowed_range = (-20, 19)
+timelag_allowed_range_rest = (-40, 39)
 
 # TODO(ryuichi): progress 37/50
 num_annotated_files = 37
