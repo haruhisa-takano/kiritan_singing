@@ -36,5 +36,5 @@ offset_correction_threshold = 0.01
 timelag_allowed_range = (-20, 19)
 timelag_allowed_range_rest = (-40, 39)
 
-# TODO(ryuichi): progress 37/50
-num_annotated_files = 37
+# 2020/05/24: finished correcting alignment 50/50
+num_annotated_files = 50
